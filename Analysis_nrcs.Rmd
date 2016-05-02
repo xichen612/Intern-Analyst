@@ -1,0 +1,2057 @@
+---
+title: "Analysis_NRCS"
+author: "Xi Chen"
+date: "July 11, 2015"
+output: html_document
+---
+#Loading data
+```{r}
+setwd("~/Documents/xi/PSU/database")
+ncss = read.csv("NCSS_All.csv", header  = T)
+dat2 = ncss
+dat2 = dat2[, c(3:13)]
+colnames(dat2)[11] = "Order"
+dim(dat2)
+summary(dat2)
+#outlier in silt, oc, bs, 6, 2, and 3 accordingly
+length(which(dat2$Silt<0))
+length(which(dat2$Organic.Carbon<0))
+length(which(dat2$Base.Saturation>100))
+
+
+colnames(dat2)
+dat2 = dat2[-which(dat2$Silt<0),]
+dat2 = dat2[-which(dat2$Organic.Carbon<0),]
+dat2 = dat2[-which(dat2$Base.Saturation>100),]
+summary(dat2)
+dim(dat2)
+```
+
+#GLOBAL DISTRIBUTION
+```{r}
+colnames(dat2)
+gdat2 = dat2[, -c(11)]
+colnames(gdat2)
+summary(gdat2)
+
+# histogram with normal curve
+
+# Sand
+temp = na.omit(gdat2[,c(1, 2)]); head(temp)
+summary(temp)
+normHist(temp, "sqrt",9, .19,.18,.17, .5,un5, 9, 15,25,"black")
+
+#Silt
+temp = na.omit(gdat2[,c(1, 3)]); head(temp)
+summary(temp)
+normHist(temp, "no", 85,0.02,0.0185,0.017, 5,un5, 9, 15,25,"black")
+
+#Clay
+temp = na.omit(gdat2[,c(1, 4)]); head(temp)
+summary(temp)
+normHist(temp, "sqrt",9, .19,.175,.16, .5,un5, 9, 15,25,"black")
+
+#OC
+temp = na.omit(gdat2[,c(1, 5)]); head(temp)
+temp[,2] = temp[,2]+0.01
+summary(temp)
+normHist(temp, "log", 1.5,.6,.55,.5, .2,un1, 9, 15,25,"black")
+
+#BD
+temp = na.omit(gdat2[,c(1, 6)]); head(temp)
+summary(temp)
+normHist(temp, "bd", 2.6,1.5,1.4,1.3, .1,un7, 9, 15,25,"black")
+
+#CEC.Soil
+temp = na.omit(gdat2[,c(1, 7)]); head(temp)
+temp[,2] = temp[,2]+0.1
+summary(temp)
+normHist(temp, "log", -.5,1,.92,.84, .2,un3, 9, 15,25,"black")
+
+#CEC.Clay
+temp = na.omit(gdat2[,c(1, 8)]); head(temp)
+temp[,2] = temp[,2]+0.01
+summary(temp)
+normHist(temp, "log", 1.3,1.7,1.55,1.4, .1,un3, 9, 15,25,"black")
+
+#BS
+temp = na.omit(gdat2[,c(1, 9)]); head(temp)
+summary(temp)
+normHist(temp, "sqrt", 3,0.4,0.37,0.34, .5,un4, 9, 15,25,"black")
+
+#pH
+temp = na.omit(gdat2[,c(1, 10)]); head(temp)
+summary(temp)
+normHist(temp, "no", 3,0.3,0.275,0.25, .3,un2, 9, 15,25,"black")
+
+# Boxplot
+
+# Sand
+temp = na.omit(gdat2[,c(1, 2)]); head(temp)
+summary(temp)
+TukBox(temp, un5, 105, 9, 20, 25)
+
+#Silt
+temp = na.omit(gdat2[,c(1, 3)]); head(temp)
+summary(temp)
+TukBox(temp, un5, 105, 9, 20, 25, "no")
+
+#Silt
+temp = na.omit(gdat2[,c(1, 4)]); head(temp)
+summary(temp)
+TukBox(temp, un5, 105, 9, 20, 25, "no")
+
+#OC
+temp = na.omit(gdat2[,c(1, 5)]); head(temp)
+summary(temp)
+TukBox(temp, un1, 65, 9, 20, 25, "log")
+
+#BD
+temp = na.omit(gdat2[,c(1, 6)]); head(temp)
+summary(temp)
+TukBox(temp, un7, 3.1, 9, 20, 25, "no")
+
+#CEC.Soil
+temp = na.omit(gdat2[,c(1, 7)]); head(temp)
+summary(temp)
+TukBox(temp, un3, 250, 9, 20, 25, "log")
+
+#CEC.Clay
+temp = na.omit(gdat2[,c(1, 8)]); head(temp)
+summary(temp)
+TukBox(temp, un3, 100, 9, 20, 25, "log")
+
+#BS
+temp = na.omit(gdat2[,c(1, 9)]); head(temp)
+summary(temp)
+TukBox(temp, un4, 105, 9, 20, 25, "no")
+
+#pH
+temp = na.omit(gdat2[,c(1, 10)]); head(temp)
+summary(temp)
+TukBox(temp, un2, 11.5, 9, 20, 25)
+
+#no use, previous code.
+store = function(){
+  temp = na.omit(gdat2[,c(1,7)]); head(temp)
+summary(temp)
+temp = temp[which(temp[,2]>0),]
+temp = temp[which(temp[,2]<100),]
+
+normHist(temp,2.5,1.5,1.3,1.1,.05,un5,9,18,20,"black")
+normHist(temp,25,0.7,0.6,0.5,.5,un5,9,18,20,"black")
+normHist(temp,3,0.35,0.32,0.29,.5,un4,9,18,20,"black")
+normHist(temp,75,0.025,0.022,0.019,5,un4,9,18,20,"black")
+normHist(temp,25,0.75,0.65,0.55,.5,un3,9,18,20,"black")
+TukeyBoxplot(temp, 70,"black", "black", "black", "black", 6, 6, 6, 5, 18, 22, un1)
+TukeyBoxplot(temp, 115,"black", "black", "black", "black", 6, 6, 6, 5, 18, 22, un4)
+TukeyBoxplot(temp, 13,"black", "black", "black", "black", 6, 6, 6, 5, 18, 22, un2)
+
+meansd = function(dat, k){
+  a = mean(na.omit(dat[,k]))
+  b = sd(na.omit(dat[,k]))
+  return(c(mean = a, sd = b))
+}
+meansd(d.dat2, 2)
+
+###Sand###
+#Histogram with normal curve (gaussian curve)
+ggplot(d.dat2, aes(x = Sand)) + 
+  geom_histogram(aes(y = ..density..,  fill=..count..), binwidth=5) + 
+  scale_fill_gradient("Count", low="#DCDCDC", high="#7C7C7C") +
+    stat_function(fun = dnorm, colour = "red",  
+                  args = list(mean = mean(na.omit(d.dat2$Sand)), sd = sd(na.omit(d.dat2$Sand)))) +
+  ggtitle("Sand Global Distribution in NRCS Dataset") +
+   annotate("text", x = c(90 , 90), y = c(0.02, 0.015), label = c("mean:36.39", "sd:27.51"), colour = "blue")
+  
+#hist(sqrt(d.dat2$Sand))  
+
+ggplot(d.dat2, aes(x = Sand)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL SAND HISTOGRAM")
+
+# Density plots
+ggplot(d.dat2, aes(x=Sand, colour=Horizon)) + geom_density() +
+  ggtitle("Global Sand Density Plot Over Horizon")
+
+a1 <- aov(Sand ~ Horizon, data = d.dat2)
+summary(a1)
+TukeyHSD(a1)
+
+ggplot(d.dat2, aes(x=Horizon, y=Sand, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("Sand GLOBAL Sand distribution in NRCS dataset") +
+  ylab("Sand (w/w %)") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.2, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  annotate("text", x = c(1,2,3), y = c(75,75,90), label = c("B-A,p-value:0", "C-A,pvalue:0", "C-B,pvalue:0"), colour = "green")
+
+ggplot2.histogram(data=d.dat2, xName='Sand',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###Silt###
+meansd(d.dat2, 3)
+#Histogram with normal curve (gaussian curve)
+siltdat = na.omit(d.dat2[,c(1,3)])
+summary(siltdat)
+siltdat = siltdat[which(siltdat[,2] > 0),]
+ggplot(siltdat, aes(x = Silt)) + 
+  geom_histogram(aes(y = ..density..,  fill=..count..), binwidth=5) + 
+  scale_fill_gradient("Count", low="#DCDCDC", high="#7C7C7C") +
+    stat_function(fun = dnorm, colour = "red",  
+                  args = list(mean = mean(na.omit(siltdat$Silt)), sd = sd(na.omit(siltdat$Silt)))) +
+  ggtitle("Silt Global Distribution in NRCS Dataset") +
+   annotate("text", x = c(90 , 90), y = c(0.015, 0.013), label = c("mean:39.79", "sd:19.36"), colour = "blue")
+
+ggplot(siltdat, aes(x=Silt, colour=Horizon)) + geom_density() +
+  ggtitle("Global Silt Density Plot Over Horizon")
+
+
+ggplot(d.dat2, aes(x = Silt)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL SILT HISTOGRAM")
+
+ggplot(siltdat, aes(x=Horizon, y=Silt, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL Silt distribution in NRCS dataset") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.2, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=d.dat2, xName='Silt',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###Clay###
+ggplot(d.dat2, aes(x = Clay)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL CLAY HISTOGRAM")
+
+ggplot(d.dat2, aes(x=Horizon, y=Clay, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL Clay distribution") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=d.dat2, xName='Clay',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###Organic.Carbon###
+length(which(d.dat2$Organic.Carbon > 5))
+length(which(d.dat2$Organic.Carbon < 0))
+OCd.dat2 = d.dat2[d.dat2$Organic.Carbon < 5 & d.dat2$Organic.Carbon > 0,]
+
+ggplot(OCd.dat2, aes(x = Organic.Carbon)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL ORGANIC.CARBON HISTOGRAM")
+
+ggplot(d.dat2, aes(x=Horizon, y=Organic.Carbon, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL Organic.Carbon distribution") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=OCd.dat2, xName='Organic.Carbon',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###Bulk.Density###
+ggplot(d.dat2, aes(x = Bulk.Density)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL BULK.DENSITY HISTOGRAM")
+
+ggplot(d.dat2, aes(x=Horizon, y=Bulk.Density, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL Bulk.Density distribution") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=d.dat2, xName='Bulk.Density',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###CEC.Soil###
+length(which(d.dat2$CEC.Soil > 100))
+CSd.dat2 = d.dat2[which(d.dat2$CEC.Soil < 100),]
+ggplot(CSd.dat2, aes(x = CEC.Soil)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL CEC.SOIL HISTOGRAM")
+
+ggplot(d.dat2, aes(x=Horizon, y=CEC.Soil, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL CEC.Soil distribution") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=CSd.dat2, xName='CEC.Soil',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###CEC.Clay###
+summary(d.dat2$CEC.Clay)
+length(which(d.dat2$CEC.Clay > 5))
+CCd.dat2 = d.dat2[which(d.dat2$CEC.Clay < 5),]
+ggplot(CCd.dat2, aes(x = CEC.Clay)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL CEC.CLAY HISTOGRAM")
+
+ggplot(CCd.dat2, aes(x=Horizon, y=CEC.Clay, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL CEC.Clay distribution") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=CCd.dat2, xName='CEC.Clay',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###BS###
+summary(d.dat2$Base.Saturation)
+length(which(d.dat2$Base.Saturation > 100))
+BSd.dat2 = d.dat2[which(d.dat2$Base.Saturation < 100),]
+ggplot(BSd.dat2, aes(x = Base.Saturation)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL BASE.SATURATION HISTOGRAM")
+
+ggplot(BSd.dat2, aes(x=Horizon, y=Base.Saturation, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL Base.Saturation distribution") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=BSd.dat2, xName='Base.Saturation',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+
+###pH###
+ggplot(d.dat2, aes(x = pH)) + geom_histogram(aes(y = ..density..), color = "black", fill = "white") + geom_density(alpha=.2, fill="#FF6666") + ggtitle("GLOBAL PH HISTOGRAM")
+
+ggplot(d.dat2, aes(x=Horizon, y=pH, fill=Horizon)) + geom_boxplot() + 
+  ggtitle("GLOBAL pH distribution") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+ggplot2.histogram(data=d.dat2, xName='pH',
+    groupName='Horizon', legendPosition="top",
+    alpha=0.5, addDensity=TRUE,
+    addMeanLine=TRUE, meanLineColor="white", meanLineSize=1.5)
+###########
+}
+
+```
+
+#GLOBAL Correlation
+```{r}
+c_dat2 = dat2[, -c(1,11)]
+colnames(c_dat2)
+summary(c_dat2)
+
+cor3 = cor(c_dat2, use = "pairwise.complete.obs", method = "spearman"); cor3
+
+# smooth fit
+pairs(c_dat2, lower.panel=panel.smooth, upper.panel=panel.cor1, diag.panel=panel.hist1)
+# straight fit
+pairs(c_dat2, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+```
+
+#PTFs
+```{r}
+###Bulk.Density###
+BDnas = is.na(dat2$Bulk.Density)
+#1.using Clay, Sand, Silt, and OC to predict
+q1 = na.omit(dat2[!BDnas, c(2,3,4,5,6)]); head(q1)
+summary(q1)
+dim(q1)
+par(mfrow = c(2,2))
+boxcox(Bulk.Density~., data = q1)
+fit.q1 = lm(Bulk.Density^1.7~., data = q1)
+summary(fit.q1)
+AIC(fit.q1)
+plot(q1[,5]^1.7, fit.q1$fitted, xlab = "Bulk.Density^1.7", ylab = "Fitted Value")
+plot(fit.q1, which=1)
+plot(fit.q1, which=2)
+
+q1s = summary(fit.q1)
+coeffq1 = q1s$coefficients
+
+#2.using clay and sand to predict 
+q2 = na.omit(dat2[!BDnas, c(2,4,6)]); head(q2)
+summary(q2)
+dim(q2)
+par(mfrow = c(2,2))
+boxcox(Bulk.Density~., data = q2)
+fit.q2 = lm(Bulk.Density^2~., data = q2)
+summary(fit.q2)
+AIC(fit.q2)
+plot(q2[,3]^2, fit.q2$fitted, xlab = "Bulk.Density^2", ylab = "fitted value")
+plot(fit.q2, which = 1)
+plot(fit.q2, which = 2)
+q2s = summary(fit.q2)
+coeffq2 = q2s$coefficients
+
+
+#3.using Organic.Carbon to predict
+q3 = na.omit(dat2[!BDnas, c(5,6)]); head(q3)
+summary(q3)
+dim(q3)
+boxcox(Bulk.Density~., data = q3)
+fit.q3 = lm((Bulk.Density)^1.8~., data = q3)
+summary(fit.q3)
+AIC(fit.q3)
+plot(q3[,2]^1.8, fit.q3$fitted, xlab = "Bulk.Density^1.8", ylab = "fitted value")
+plot(fit.q3, which=1)
+plot(fit.q3, which=2)
+
+q3s = summary(fit.q3)
+coeffq3 = q3s$coefficients
+
+#4.using all properties to predict
+q4 = na.omit(dat2[!BDnas, -c(1, 11)]); head(q4)
+summary(q4)
+dim(q4)
+
+#lasso method to do the variables selection firstly due to multicolinearity.
+library(glmnet)
+x = as.matrix(q4[, -5])
+y = q4[, 5]
+cv.out=cv.glmnet(x,y,alpha=1)
+par(mfrow = c(1,1))
+plot(cv.out)
+bestlam=cv.out$lambda.min; bestlam
+lasso.mod=glmnet(x,y,alpha=1,lambda=bestlam)
+lasso.mod$beta
+#turning out that sand should be drop due to multicolinearity.
+
+q4 = na.omit(dat2[!BDnas, -c(1,2,11)]); head(q4)
+summary(q4)
+dim(q4)
+par(mfrow = c(2,2))
+boxcox(Bulk.Density~., data = q4)
+fit.q4 = lm(Bulk.Density^1.4~., data = q4)
+summary(fit.q4)
+plot(q4[,4]^1.4, fit.q4$fitted, xlab = "Bulk.Density^1.4", ylab = "fitted value")
+plot(fit.q4, which =1)
+plot(fit.q4, which =2)
+
+
+# adding second order term and interaction
+newfit.q4 = lm(Bulk.Density^1.4~.+I(Silt^2)+I(Clay^2)+I(Organic.Carbon^2), data = q4)
+
+summary(newfit.q4)
+par(mfrow = c(1,3))
+plot(newfit.q4, which =1)
+plot(newfit.q4, which =2)
+plot(q4[,4]^1.4, newfit.q4$fitted, xlab = "Bulk.Density^1.4", ylab = "fitted value")
+
+# stepwise procedure (upward and backward, critera is AIC) to select the final model.
+stepAIC(newfit.q4, direction = "both")
+
+final.q4 = lm(Bulk.Density^1.4~Silt+Clay+Organic.Carbon+CEC.Soil+Base.Saturation+pH+
+                I(Clay^2)+I(Organic.Carbon^2), data = q4)
+summary(final.q4)
+q4s = summary(final.q4)
+coeffq4 = q4s$coefficients
+AIC(final.q4)
+plot(final.q4, which =1)
+plot(final.q4, which =2)
+plot(q4[,4]^1.4, final.q4$fitted, xlab = "Bulk.Density^1.4", ylab = "fitted value")
+
+###CEC.Soil###
+CECnas = is.na(dat2$CEC.Soil)
+#1.using physical properties.
+q5 = na.omit(dat2[!CECnas, c(2:4,6,7)]); head(q5)
+summary(q5)
+dim(q5)
+par(mfrow = c(2,2))
+boxcox(CEC.Soil~., data = q5)
+fit.q5 = lm(CEC.Soil^.3~., data = q5)
+summary(fit.q5)
+plot(q5[,5]^.3, fit.q5$fitted, xlab = "CEC.Soil^.3", ylab = "fitted value")
+plot(fit.q5, which =1)
+plot(fit.q5, which =2)
+
+q5s = summary(fit.q5)
+coeffq5 = q5s$coefficients
+AIC(fit.q5)
+
+#2.using chemical properties.
+q6 = na.omit(dat2[!CECnas, c(5,8,9,10,7)]); head(q6)
+summary(q6)
+dim(q6)
+boxcox(CEC.Soil+0.01~., data = q6)
+fit.q6 = lm(CEC.Soil^.4~., data = q6)
+summary(fit.q6)
+AIC(fit.q6)
+plot(q6[,5]^.4, fit.q6$fitted, xlab = "CEC.Soil.4", ylab = "fitted value")
+plot(fit.q6, which =1)
+plot(fit.q6, which =2)
+
+q6s = summary(fit.q6)
+coeffq6 = q6s$coefficients
+
+#3.all
+q7 = na.omit(dat2[, -c(1,11)]); head(q7)
+summary(q7)
+#lasso method to do the variables selection firstly due to multicolinearity.
+library(glmnet)
+x = as.matrix(q7[, -6])
+y = q7[, 6]
+cv.out=cv.glmnet(x,y,alpha=1)
+par(mfrow = c(1,1))
+plot(cv.out)
+bestlam=cv.out$lambda.min; bestlam
+lasso.mod=glmnet(x,y,alpha=1,lambda=bestlam)
+lasso.mod$beta
+#turning out that silt and pH should be drop due to multicolinearity.
+
+q7 = na.omit(dat2[, -c(1,3,11)]); head(q7)
+par(mfrow = c(2,2))
+boxcox(CEC.Soil~., data = q7)
+fit.q7 = lm(CEC.Soil^.4~., data = q7)
+summary(fit.q7)
+AIC(fit.q7)
+plot(q7[,5]^.4, fit.q7$fitted, xlab = "CEC.Soil^.4", ylab = "fitted value")
+plot(fit.q7, which = 1)
+plot(fit.q7, which = 2)
+
+
+
+newfit.q7 = lm(CEC.Soil^.4~.+I(Sand^2)+I(Clay^2)+I(Organic.Carbon^2)+
+                 I(Bulk.Density^2)+I(CEC.Clay^2), data = q7)
+par(mfrow = c(1,3))
+summary(newfit.q7)
+
+plot(newfit.q7, which =1)
+plot(newfit.q7, which =2)
+plot(q7[,5]^.4, newfit.q7$fitted, xlab = "CEC.Soil^.4", ylab = "fitted value")
+AIC(newfit.q7)
+stepAIC(newfit.q7, direction = "both")
+
+final.q7 = lm(CEC.Soil^0.4 ~ Sand + Clay + Organic.Carbon + Bulk.Density + 
+    CEC.Clay + Base.Saturation + pH + I(Sand^2) + I(Clay^2) + 
+    I(Organic.Carbon^2) + I(CEC.Clay^2), data = q7)
+summary(final.q7)
+
+plot(final.q7, which =1)
+plot(final.q7, which =2)
+plot(q7[,5]^.4, final.q7$fitted, xlab = "CEC.Soil^.4", ylab = "fitted value")
+AIC(final.q7)
+
+q7s = summary(final.q7)
+coeffq7 = q7s$coefficients
+
+###Organic.Carbon###
+OCnas = is.na(dat2$Organic.Carbon)
+
+#1.using physical properites to predict
+q8 = na.omit(dat2[, c(2,3,4,6,5)]); head(q8)
+summary(q8)
+par(mfrow = c(2,2))
+boxcox(Organic.Carbon+.01~., data = q8)
+fit.q8 = lm(Organic.Carbon^.1~., data = q8)
+summary(fit.q8)
+plot(q8[,5]^.1, fit.q8$fitted, xlab = "Organic.Carbon^.1", ylab = "fitted value")
+plot(fit.q8, which = 1)
+plot(fit.q8, which = 2)
+AIC(fit.q8)
+q8s = summary(fit.q8)
+coeffq8 = q8s$coefficients
+
+#2.using chemical properites to predict
+q9 = na.omit(dat2[, c(7:10,5)]); head(q9)
+summary(q9)
+boxcox(Organic.Carbon+.01~., data = q9)
+fit.q9 = lm(Organic.Carbon^.1~., data = q9)
+summary(fit.q9)
+plot(q9[,5]^.1, fit.q9$fitted, xlab = "Organic.Carbon^.1", ylab = "fitted value")
+plot(fit.q9, which = 1)
+plot(fit.q9, which = 2)
+AIC(fit.q9)
+q9s = summary(fit.q9)
+coeffq9 = q9s$coefficients
+
+#3.using all properties to predict
+q10 = na.omit(dat2[, -c(1,11)]); head(q10)
+summary(q10)
+#lasso method to do the variables selection firstly due to multicolinearity.
+library(glmnet)
+x = as.matrix(q10[, -4])
+y = q10[, 4]
+cv.out=cv.glmnet(x,y,alpha=1)
+par(mfrow = c(1,1))
+plot(cv.out)
+bestlam=cv.out$lambda.min; bestlam
+lasso.mod=glmnet(x,y,alpha=1,lambda=bestlam)
+lasso.mod$beta
+#turning out that silt should be drop due to multicolinearity.
+q10 = na.omit(dat2[, -c(1,3,11)]); head(q10)
+summary(q10)
+length(which(q10[,3]==0))
+q10 = q10[which(q10[,3]>0),]
+par(mfrow = c(2,2))
+boxcox(Organic.Carbon+.01~., data = q10)
+fit.q10 = lm(Organic.Carbon^.1~., data = q10)
+summary(fit.q10)
+plot(q10[,3]^.1, fit.q10$fitted, xlab = "Organic.Carbon^.1", ylab = "fitted value")
+plot(fit.q10, which = 1)
+plot(fit.q10, which = 2)
+
+newfit.q10 = lm(Organic.Carbon^.1~.+I(Bulk.Density^2)+I(CEC.Soil^2), data = q10)
+summary(newfit.q10)
+par(mfrow = c(1,3))
+AIC(newfit.q10)
+plot(newfit.q10, which = 1)
+plot(newfit.q10, which = 2)
+plot(q10[,3]^.1, newfit.q10$fitted, xlab = "Organic.Carbon^.1", ylab = "fitted value")
+
+stepAIC(newfit.q10, directioin = "both")
+
+final.q10 = lm(Organic.Carbon^0.1 ~ Sand + Bulk.Density + 
+    CEC.Soil + CEC.Clay + Base.Saturation + pH, data = q10)
+
+summary(final.q10)
+AIC(final.q10)
+par(mfrow = c(1,3))
+plot(final.q10, which =1)
+plot(final.q10, which =2)
+plot(q10[,3]^.1, final.q10$fitted, xlab = "Organic.Carbon", ylab = "fitted value")
+
+q10s = summary(newfit.q10)
+coeffq10 = q10s$coefficients
+
+store = function(){
+ #lasso regression
+library(glmnet)
+ptf.dat2 = na.omit(dat2[!ss1, -c(1,11)]); head(ptf.dat2)
+summary(ptf.dat2)
+ptf.dat2 = ptf.dat2[which(ptf.dat2[, 2]>0),]
+ptf.dat2 = ptf.dat2[which(ptf.dat2[, 4]>0),]
+ptf.dat2 = ptf.dat2[which(ptf.dat2[, 6]<100),]
+ptf.x = as.matrix(scale(ptf.dat2[, -5])); head(ptf.x)
+ptf.y = ptf.dat2[,5]; head(ptf.y)
+
+cv.out=cv.glmnet(ptf.x, ptf.y,alpha=1)
+plot(cv.out)
+bestlam=cv.out$lambda.min; bestlam
+lasso.mod=glmnet(ptf.x,ptf.y,alpha=1,lambda=bestlam)
+summary(lasso.mod)
+lasso.mod$beta
+
+
+#clay sand gravel and oc to predict BD.
+par(mfrow=c(1,2))
+ss1 = is.na(dat2$Bulk.Density)
+q1.dat2 = na.omit(dat2[!ss1, c(2,4,5,6)]); head(q1.dat2)
+q1.dat2 = q1.dat2[which(q1.dat2[,3]>0), ]
+summary(q1.dat2)
+q1.x = scale(q1.dat2[,-4]); head(q1.x)
+q1.y = q1.dat2[,4]
+cv.out=cv.glmnet(q1.x, q1.y,alpha=1)
+plot(cv.out)
+bestlam=cv.out$lambda.min; bestlam
+lasso.mod=glmnet(q1.x,q1.y,alpha=1,lambda=bestlam)
+lasso.mod$beta
+
+
+hist(q1.dat2$Bulk.Density)
+
+boxcox(Bulk.Density~., data = q1.dat2)
+
+#linear regression
+tempmodel1 = lm(Bulk.Density~., data = q1.dat2)
+summary(tempmodel1)
+plot(tempmodel1,1)
+plot(tempmodel1,2)
+
+Model1 = lm(Bulk.Density~.^2 + I(Sand^2) + I(Clay^2) + I(Organic.Carbon^2), data = q1.dat2)
+summary(Model1)
+anova(Model1)
+plot(Model1, 1)
+plot(Model1, 2)
+
+stepModel1 = stepAIC(Model1, direction = "both")
+stepModel1$anova
+
+fModel1 = lm(Bulk.Density ~ Sand + Clay + Organic.Carbon + I(Clay^2) + I(Organic.Carbon^2) + 
+    Sand:Clay + Sand:Organic.Carbon + Clay:Organic.Carbon, data = q1.dat2[-c(2993,87013,11705),])
+summary(fModel1)
+plot(fModel1, 1)
+plot(fModel1, 2)
+
+
+par(mfrow=c(1,1))
+pred1 = predict(fModel1, q1.dat2)
+plot(pred1, q1.dat2$Bulk.Density, ylab="Bulk.Density (g cm^-3)", xlab= "")
+
+
+#clay, silt, oc and ph to predict cec.soil
+ss2.1 = is.na(dat2$CEC.Soil)
+q2.dat2 = na.omit(dat2[!ss2.1, c(3,4,5,10,7)]); head(q2.dat2)
+q2.dat2 = q2.dat2[which(q2.dat2[,1]>0),]
+q2.dat2 = q2.dat2[which(q2.dat2[,3]>0),]
+q2.dat2 = q2.dat2[which(q2.dat2[,5]>0),]
+q2.dat2 = q2.dat2[which(q2.dat2[,5]<100),]
+summary(q2.dat2)
+hist((q2.dat2$CEC.Soil)^1)
+hist((q2.dat2$CEC.Soil)^0.25)
+par(mfrow = c(1,1))
+boxcox(CEC.Soil~., data = q2.dat2)
+
+model2 = lm(CEC.Soil~., data = q2.dat2)
+AIC(model2)
+summary(model2)
+par(mfrow=c(1,2))
+plot(model2, 1)
+plot(model2, 2)
+
+model2.1 = lm((CEC.Soil)^0.4~.^2 + , data = newq2.dat2)
+AIC(model2.1)
+summary(model2.1)
+plot(model2.1, 1)
+plot(model2.1, 2)
+
+plot(model2.1, 4)
+
+stepModel2.1 = stepAIC(model2.1, direction = "both")
+stepModel2.1$anova
+
+finalmodel2.1 = lm((CEC.Soil)^0.4 ~ Silt + Clay + Organic.Carbon + pH + I(Silt^2) + 
+    I(Clay^2) + I(Organic.Carbon^2) + I(pH^2) + Silt:Organic.Carbon + 
+    Silt:pH + Clay:Organic.Carbon + Clay:pH + Organic.Carbon:pH, data = newq2.dat2)
+
+AIC(finalmodel2.1)
+summary(finalmodel2.1)
+plot(finalmodel2.1,1)
+plot(finalmodel2.1,2)
+newq2.dat2 = cbind(q2.dat2, row.names(q2.dat2))
+newq2.dat2 = newq2.dat2[-c(which(newq2.dat2[,6] == 8833 |newq2.dat2[,6] == 12637|newq2.dat2[,6] == 14417 )),-6]
+model2.1 = lm((CEC.Soil)^0.4~.^2+ I(Silt^2) + I(Clay^2) + I(Organic.Carbon^2) + I(pH^2), data = newq2.dat2)
+
+
+
+stepModel2.1 = stepAIC(Model2.1, direction = "both")
+stepModel2.1$anova
+
+ss2.2 = is.na(dat2$CEC.Clay)
+q2.2.dat2 = na.omit(dat2[!ss2.2, c(5,6,7,10,12)])
+hist(log(q2.2.dat2$CEC.Clay))
+
+Model2.2 = glm(log(CEC.Clay + 0.5)~.^2 +I(Silt^2) + I(Clay^2) + I(Organic.Carbon^2) + I(pH^2), data = q2.2.dat2)
+summary(Model2.2)
+plot(Model2.2, 1)
+plot(Model2.2, 2)
+
+stepModel2.2 = stepAIC(Model2.2, direction = "both")
+stepModel2.2$anova
+
+
+
+#all to predict BD
+
+#all to predict cec.soil.
+
+
+ 
+}
+
+
+```
+
+#Grouping
+```{r}
+
+# Determine number of clusters
+wss2 <- (nrow(group.dat2)-1)*sum(apply(group.dat2,2,var))
+for (i in 2:15) wss2[i] <- sum(kmeans(group.dat2,
+                                     centers=i, nstart = 20)$withinss)
+
+plot(1:15, wss2, type="b", xlab="Number of Clusters",
+     ylab="Within groups sum of squares")
+
+
+```
+
+#12 soil orders comparison
+```{r}
+# all properties' unit
+un1 = "(g kg^-1)"
+un2 = ""
+un3 = "(cmol kg^-1)"
+un4 = "(% of CEC)"
+un5 = "(w/w %)"
+un6 = "(v/v % of fraction > 2 mm)"
+un7 = "(g cm^-3)"
+colnames(dat2)
+
+#Sand
+temp = na.omit(dat2[,c(2,11,1)]); head(temp)
+temp = temp[which(temp[,1]<=100),]
+summary(temp)
+ordercomp3(temp,un5, 114, 109, 104, 6, 12,25)
+
+#Silt
+temp = na.omit(dat2[,c(3,11,1)]); head(temp)
+temp = temp[which(temp[,1]>=0),]
+summary(temp)
+ordercomp3(temp,un5, 114, 109, 104, 6, 12,25)
+
+#Clay
+temp = na.omit(dat2[,c(4,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un5, 114, 109, 104, 6, 12,25)
+
+#OC
+temp = na.omit(dat2[,c(5,11,1)]); head(temp)
+summary(temp)
+temp = temp[which(temp[,1]>0),]
+temp[,1] = log10(temp[,1])
+summary(temp)
+#OC need to specify because there is no observation in Gelisols
+ input = paste0(colnames(temp)[1], un1); input
+  colnames(temp)[1] = "Property"
+  Adat = temp[which(temp[,3] == "A"), ]
+  Bdat = temp[which(temp[,3] == "B"), ]
+  Cdat = temp[which(temp[,3] == "C"), ]; head(Cdat)
+  model1 = aov(Property~Order, data = Adat)
+  tuk1 = HSD.test(model1, "Order", group=TRUE, alpha = 0.05)
+  model2 = aov(Property~Order, data = Bdat)
+  tuk2 = HSD.test(model2, "Order", group=TRUE, alpha = 0.05)
+  model3 = aov(Property~Order, data = Cdat)
+  tuk3 = HSD.test(model3, "Order", group=TRUE, alpha = 0.05)
+  labels1 = tuk1$group[,3]; labels1
+  labels2 = tuk2$group[,3]; labels2
+  labels3 = tuk3$group[,3]; labels3
+  len1 = length(labels1)
+  len2 = length(labels2)
+  len3 = length(labels3)
+ggplot(temp, aes(x=Order, y=Property, fill= Horizon)) + geom_boxplot() +
+    ylab(input)+
+    xlab("")+
+        annotate("text", x = c(1:len1), y = rep(2.5, len1), label = labels1, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:len2), y = rep(2.3, len2), label = labels2, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:4, 6:12), y = rep(2.1, len3), label = labels3, 
+                 size = 6, colour = "black") +
+    theme(axis.text=element_text(size=12),axis.title=element_text(size=25,face="bold"))
+
+#BD
+temp = na.omit(dat2[,c(6,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un7, 3.5, 3.3, 3.1, 6, 12,25)
+
+#CEC.Soil
+temp = na.omit(dat2[,c(7,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un3, 2.8, 2.6, 2.4, 6, 12,25)
+
+ggplot(temp, aes(x=Order, y=Property, fill= Horizon)) + geom_boxplot() +
+    ylab(input)+
+    xlab("")+
+        annotate("text", x = c(1:len1), y = rep(700, len1), label = labels1, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:len2), y = rep(400, len2), label = labels2, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:len3), y = rep(250, len3), label = labels3, 
+                 size = 6, colour = "black") +
+    theme(axis.text=element_text(size=12),axis.title=element_text(size=25,face="bold"))+
+   scale_y_continuous(trans=log10_trans())
+
+
+#CEC.Clay
+temp = na.omit(dat2[,c(8,11,1)]); head(temp)
+temp[,1] = log10(temp[,1]+.1)
+summary(temp)
+
+ input = paste0(colnames(temp)[1], un3); input
+  colnames(temp)[1] = "Property"
+  Adat = temp[which(temp[,3] == "A"), ]
+  Bdat = temp[which(temp[,3] == "B"), ]
+  Cdat = temp[which(temp[,3] == "C"), ]; head(Cdat)
+  table(Cdat[,2])
+  model1 = aov(Property~Order, data = Adat)
+  tuk1 = HSD.test(model1, "Order", group=TRUE, alpha = 0.05)
+  model2 = aov(Property~Order, data = Bdat)
+  tuk2 = HSD.test(model2, "Order", group=TRUE, alpha = 0.05)
+  model3 = aov(Property~Order, data = Cdat)
+  tuk3 = HSD.test(model3, "Order", group=TRUE, alpha = 0.05)
+  labels1 = tuk1$group[,3]; labels1
+  labels2 = tuk2$group[,3]; labels2
+  labels3 = tuk3$group[,3]; labels3
+  len1 = length(labels1)
+  len2 = length(labels2)
+  len3 = length(labels3)
+ggplot(temp, aes(x=Order, y=Property, fill= Horizon)) + geom_boxplot() +
+    ylab(input)+
+    xlab("")+
+        annotate("text", x = c(1:len1), y = rep(400, len1), label = labels1, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:len2), y = rep(250, len2), label = labels2, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:4, 6:12), y = rep(140, len3), label = labels3, 
+                 size = 6, colour = "black") +
+    theme(axis.text=element_text(size=12),axis.title=element_text(size=25,face="bold"))+
+   scale_y_continuous(trans=log10_trans())
+  
+    if(trans == "log"){
+    gg = gg + scale_y_continuous(trans=log10_trans())
+
+#BS
+temp = na.omit(dat2[,c(9,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un4, 112, 108, 104, 6, 12,25)
+
+#pH
+temp = na.omit(dat2[,c(10,11,1)]); head(temp)
+summary(temp)
+# need specify because there is no obs in C Horizon of Gelisols
+ input = paste0(colnames(temp)[1], un2); input
+  colnames(temp)[1] = "Property"
+  Adat = temp[which(temp[,3] == "A"), ]
+  Bdat = temp[which(temp[,3] == "B"), ]
+  Cdat = temp[which(temp[,3] == "C"), ]; head(Cdat)
+  table(Cdat[,2])
+  model1 = aov(Property~Order, data = Adat)
+  tuk1 = HSD.test(model1, "Order", group=TRUE, alpha = 0.05)
+  model2 = aov(Property~Order, data = Bdat)
+  tuk2 = HSD.test(model2, "Order", group=TRUE, alpha = 0.05)
+  model3 = aov(Property~Order, data = Cdat)
+  tuk3 = HSD.test(model3, "Order", group=TRUE, alpha = 0.05)
+  labels1 = tuk1$group[,3]; labels1
+  labels2 = tuk2$group[,3]; labels2
+  labels3 = tuk3$group[,3]; labels3
+  len1 = length(labels1)
+  len2 = length(labels2)
+  len3 = length(labels3)
+ggplot(temp, aes(x=Order, y=Property, fill= Horizon)) + geom_boxplot() +
+    ylab(input)+
+    xlab("")+
+        annotate("text", x = c(1:len1), y = rep(12.5, len1), label = labels1, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:len2), y = rep(12, len2), label = labels2, 
+                 size = 6, colour = "black") +
+        annotate("text", x = c(1:4, 6:12), y = rep(11.5, len3), label = labels3, 
+                 size = 6, colour = "black") +
+    theme(axis.text=element_text(size=12),axis.title=element_text(size=25,face="bold"))
+
+
+store = function(){
+  temp = na.omit(dat2[,c(1,5,11)]); head(temp)
+temp = temp[which(temp[,2]>0),]
+temp = temp[which(temp[,2]<100),]
+head(temp)
+summary(temp)
+dim(temp)
+
+compBoxplot(temp,3,30,2, 5, 12,25,"black", un1)
+compBoxplot(temp,2,105,4, 5, 12,25,"black", un4)
+compBoxplot(temp,2,3,.15, 5, 12,25,"black", un7)
+compBoxplot(temp,2,11.5,.5, 5, 12,25,"black", un2)
+
+store2 =function(dat){
+  ttt = aov(Sand~Order, data = temp)
+re = TukeyHSD(ttt)$Order[TukeyHSD(ttt)$Order[,4] > 0.05, 4]
+ttname = names(re)
+len = length(ttname)
+p = NULL
+for(i in 1:len){
+  p[i] = paste(ttname[i], ":",re[i])
+}
+p
+
+par(mfrow = c(1, 2))
+grid.arrange(p2, p3, ncol = 2, nrow = 1)
+mutiplot()
+
+p1 = compBoxplot(temp,un5); p1
+p2 = Taxorderbar(temp,1,2,3,un5)
+p3 = nrcshist(temp, 1,2,3,un5,80,0.025,0.023,0.021, 5)
+#Example:
+BasicBoxplot(dat2, 1,2,11, un5)
+Taxorderboxplot(dat2, 1,2,11,un5)
+nrcshist(dat2, 1, 2, 11, un5, 80, 0.025,0.023,0.021, 5)
+}
+
+Taxorderbar = function(dat, a, b, c, sen){
+  temp = na.omit(dat[,c(a,b,c)])
+  name = colnames(temp)[2]
+  num = table(temp[,1])
+  ho = as.character(temp[,1])
+  ho[which(ho == "A")] = paste0("A (n = ", num[1], ")")
+  ho[which(ho == "B")] = paste0("B (n = ", num[2], ")")
+  ho[which(ho == "C")] = paste0("C (n = ", num[3], ")")
+  ho = as.factor(ho)
+  temp[,1] = ho
+  input = paste(name, sen)
+  colnames(temp)[2] = "Property"
+  gg = ggplot(data=temp, aes(x=Horizon, y=Property, fill=Horizon)) +
+    geom_bar(stat="identity", position=position_dodge(), width = 0.2) +
+  ylab(input) +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", size = 9,show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", size = 5, show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="yellow", geom="text", size = 5, show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+    theme(axis.text=element_text(size=20),axis.title=element_text(size=20,face="bold"))
+  
+          
+  return(gg)
+}
+
+nrcshist = function(dat, a, b, c, sen, h, v1, v2, v3, k){
+  temp = na.omit(dat[, c(a,b,c)])
+  name = colnames(temp)[2]
+  me = mean(temp[,2])
+  se = sd(temp[,2])
+  arg1 = paste0("mean = ", round(me, digits = 3))
+  arg2 = paste0("sd = ", round(se, digits = 3))
+  arg3 = paste0("n = ", dim(temp)[1])
+  input = paste(name, sen)
+  colnames(temp)[2] = "Property"
+  gg = ggplot(temp, aes(x = Property)) + 
+  geom_histogram(aes(y = ..density..,  fill=..count..), binwidth=k) + 
+  xlab(input) +
+  ylab("Relative Frequency") +
+  scale_fill_gradient("Count", low="#DCDCDC", high="#7C7C7C") +
+    stat_function(fun = dnorm, colour = "red",  
+                  args = list(mean = me, sd = se) )+
+   annotate("text", x = c(rep(h,3)), y = c(v1,v2,v3), label = c(arg1, arg2, arg3),size = 9, colour = "blue") +
+    theme(axis.text=element_text(size=18),axis.title=element_text(size=20,face="bold"))
+  return(gg)
+}
+
+}
+
+```
+
+#12 Soil orders (one by one)
+```{r}
+colnames(dat2)
+Taxorder = levels(dat2[,11])
+Taxorder
+
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[1]),]
+colnames(orderdat2)
+summary(orderdat2)
+
+par(mfrow = c(1,3))
+table(dat2[,11])
+
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[1]),]
+summary(orderdat2)
+#sand
+easygrid(orderdat2, 65, 0.038, 0.033, 0.029, 0.043, 2,5)
+#silt
+easygrid(orderdat2, 65, 0.058, 0.053, 0.049, 0.063, 3,5)
+easygrid(orderdat2, 65, 0.048, 0.043, 0.039, 0.053, 3,5)
+easygrid(orderdat2, 65, 0.038, 0.033, 0.029, 0.043, 3,5)
+#clay
+easygrid(orderdat2, 65, 0.038, 0.033, 0.029, 0.043, 4,5)
+easygrid(orderdat2, 50, 0.048, 0.043, 0.039, 0.053, 4,5)
+easygrid(orderdat2, 35, 0.058, 0.053, 0.049, 0.063, 4,5)
+easygrid(orderdat2, 35, 0.068, 0.063, 0.059, 0.073, 4,5)
+easygrid(orderdat2, 35, 0.09, 0.08, 0.07, 0.1, 4,5)
+#oc
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[12]),]
+summary(orderdat2)
+easygrid(orderdat2, 20, 0.09, 0.08, 0.07, 0.1, 5,2)
+easygrid(orderdat2, 4, 0.6, 0.5, 0.4, .7, 5,1)
+
+a1 = orderHist(orderdat2,1, 20, 0.5,0.45,0.4,0.55,5,1 ); a1
+a2 = orderHist(orderdat2,2, 5, 1.8,1.6,1.4,2,5,1 ); a2
+a3 = orderHist(orderdat2,3, .5, 2.7,2.4,2.1,3,5,.2 ); a3
+
+a1 = orderHist(orderdat2,1, 25, 0.21,0.18,0.15,0.24,5,3 ); a1
+a2 = orderHist(orderdat2,2, 5, .55,.5,.45,.6,5,1 ); a2
+a3 = orderHist(orderdat2,3, 10, 2.7,2.4,2.1,3,5,.5 ); a3
+
+par(mfrow =c(1,3))
+grid.arrange(a1, a2, a3, ncol = 3, nrow = 1)
+#bd
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[12]),]
+summary(orderdat2)
+easygrid(orderdat2, 1.5, 3.8, 3.6, 3.4, 4, 6,.1)
+easygrid(orderdat2, 1.5, 6.5, 6, 5.5, 7, 6,.1)
+easygrid(orderdat2, 1.2, 6, 5.5, 5, 6.5, 6,.1)
+easygrid(orderdat2, 1.2, 5.5, 5, 4.5, 6, 6,.1)
+#cec.soil
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[12]),]
+summary(orderdat2)
+easygrid(orderdat2, 45, 0.038, 0.033, 0.029, 0.043, 7,5)
+easygrid(orderdat2, 55, 0.048, 0.043, 0.039, 0.053, 7,5)
+easygrid(orderdat2, 45, 0.11, 0.1, 0.09, 0.12, 7,5)
+
+#cec.clay
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[12]),]
+summary(orderdat2)
+easygrid(orderdat2, 6, 1.6, 1.4, 1.2, 1.8, 8,1)
+easygrid(orderdat2, 3, 0.85, 0.75, 0.65, 0.95, 8,.5)
+easygrid(orderdat2, 20, 0.55, 0.45, 0.35, 0.65, 8,1)
+easygrid(orderdat2, 2, .6, .4, .2, .8, 8,.2)
+easygrid(orderdat2, 1.5, 3.5, 3, 2.5, 4, 8,.5)
+
+a1 = orderHist(orderdat2,1, 20, 0.5,0.45,0.4,0.55,8,2 ); a1
+a2 = orderHist(orderdat2,2, 5, .8,.7,.6,.9, 8,1 ); a2
+a3 = orderHist(orderdat2,3, 10, .9,.8,.7,1,8,1 ); a3
+
+par(mfrow =c(1,3))
+grid.arrange(a1, a2, a3, ncol = 3, nrow = 1)
+
+#bs
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[12]),]
+summary(orderdat2)
+easygrid(orderdat2, 55, 0.038, 0.033, 0.029, 0.043, 9,5)
+easygrid(orderdat2, 55, 0.1, 0.09, 0.08, 0.11, 9,5)
+#ph
+easygrid(orderdat2, 6, 0.78, 0.73, 0.69, 0.83, 10,.5)
+easygrid(orderdat2, 6.5, 0.48, 0.43, 0.39, 0.53, 10,.5)
+
+
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[12]),]
+summary(orderdat2)
+
+easygrid(orderdat2, 74, 0.021, 0.019, 0.017, 0.023, 6, .05)
+easygrid(orderdat2, 70, 0.048, 0.043, 0.039, 0.053, 2)
+easygrid(orderdat2, 75, 0.019, 0.017, 0.015, 0.021, 2)
+easygrid(orderdat2, 85, 0.015, 0.013, 0.011, 0.018, 2)
+easygrid(orderdat2, 52, 0.025, 0.023, 0.021, 0.028, 2)
+easygrid(orderdat2, 25, 0.025, 0.023, 0.021, 0.028, 2)
+
+orderdat2 = dat2[which(dat2[,11] == levels(dat2[,11])[12]),]
+summary(orderdat2)
+easygrid(orderdat2, 65, 0.026, 0.024, 0.022, 0.028, 3, 5)
+easygrid(orderdat2, 55, 0.03, 0.026, 0.022, 0.034, 3, 5)
+easygrid(orderdat2, 25, 0.04, 0.036, 0.032, 0.044, 3, 5)
+easygrid(orderdat2, 70, 0.06, 0.055, 0.05, 0.065, 3, 5)
+easygrid(orderdat2, 60, 0.047, 0.044, 0.041, 0.050, 3, 5)
+
+a1 = orderHist(orderdat2,1, 50, 0.05,0.045,0.04,0.055,3,5 ); a1
+a2 = nrcs_ha_plot(orderdat2,2, 25, 0.035,0.032,0.029,0.04,3,5); a2
+a3 = nrcs_ha_plot(orderdat2,3, 45, 0.027,0.024,0.021,0.03,3,5); a3
+par(mfrow =c(1,3))
+grid.arrange(a1, a2, a3, ncol = 3, nrow = 1)
+
+#if same position
+easygrid = function(dat, a,b1,b2,b3,b4, pro, wid){
+  a1 = orderHist(dat,1,a,b1,b2,b3,b4,pro,wid)
+  a2 = orderHist(dat,2,a,b1,b2,b3,b4,pro,wid)
+  a3 = orderHist(dat,3,a,b1,b2,b3,b4,pro, wid)
+  par(mfrow=c(1,3))
+  grid.arrange(a1, a2, a3, ncol = 3, nrow = 1)
+}
+
+library(grid)
+library(gridExtra)
+orderHist = function(dat, k,x, y1,y2,y3, y4, pro, wid){
+  # Args:
+  # * k: which horizon 1:A, 2:B, 3:C
+  # * x: horizon coordinate of mean sd and N and "Horizon"
+  # * y1, y2, y3: vertical coordinate of mean sd and N
+  # * y4: vertical position of "A|B|C Horizon"
+  # * pro: which property? eg: 2 represents sand.
+  # * wid: width of histogram.
+  
+  dat = na.omit(dat[,c(1,pro)])
+  
+  if(any(colnames(dat)[2] == "Sand"|grepl("^CEC", colnames(dat)[2]))){
+    dat = dat[which(dat[,2]<100),]
+  }else{
+    if(any(colnames(dat)[2] == "Silt"|colnames(dat)[2] == "Organic.Carbon")){
+      dat =dat[which(dat[,2]>0), ]
+    }
+  }
+  
+  horizon = levels(dat[,1])[k]
+  dat = dat[which(dat[,1] == horizon),]
+  dat = droporder(dat,1)
+  m1 = mean(dat[,2])
+  s1 = sd(dat[,2])
+  arg1 = paste("mean =", round(m1, digits=3))
+  arg2 = paste("sd =", round(s1, digits=3))
+  arg3 = paste("N =", dim(dat)[1])
+  colnames(dat)[2] = "Property"
+  if(levels(dat[,1]) == "A"){
+    colors = "#CC6666"
+    input1 = "Relative Frequency"
+  }else{
+    input1 = ""
+    if(levels(dat[,1]) == "B"){
+      colors = "#9999CC"
+    }else{
+      colors = "#66CC99"
+    }
+  }
+  input2 = paste(horizon, "Horizon")
+plot = ggplot(dat, aes(x = Property)) + 
+    geom_histogram(aes(y = ..density..), binwidth= wid, fill = colors, colour = "black") + 
+  ylab(input1) +
+    xlab("") +
+  #scale_fill_gradient("Count", low="#DCDCDC", high="#7C7C7C") +
+    stat_function(fun = dnorm, colour = "red",  
+                  args = list(mean = m1, sd = s1)) +
+   annotate("text", x = rep(x,3), y = c(y1,y2,y3), label = c(arg1, arg2, arg3),size = 4, colour = "black") +
+  annotate("text", x = x, y = y4, label = input2, colour = colors, size = 7) +
+    theme(axis.text=element_text(size=12),axis.title=element_text(size=15,face="bold"))
+return(plot)
+}
+
+
+#no use function, just store.
+store = function(temp){
+   ho = as.character(dat[,1])
+  ho[which(ho == "A")] = "A Horizon"
+  ho[which(ho == "B")] = "B Horizon"
+  ho[which(ho == "C")] = "C Horizon"
+  ho = as.factor(ho)
+  dat[,1] = ho
+  gg = ggplot(dat, aes(x=Horizon, y=Property, fill=Horizon)) + geom_boxplot(fill = c("#CC6666", "#9999CC", "#66CC99"))+ 
+    ylab(input3) +
+    xlab("") +
+    stat_summary(fun.y= mean, colour="darkred", geom="point", shape=18, size=3, show_guide = FALSE) +
+    stat_summary(fun.y= mean, colour="black", geom="text", size = 7,show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+    stat_summary(fun.y=max, colour="red", geom="text", size = 5, show_guide = FALSE, 
+               vjust=-0.2, aes( label=round(..y.., digits=1))) +
+    stat_summary(fun.y=min, colour="red", geom="text", size = 5, show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+    annotate("text", x = c(1:3), y = rep(x,3), label = p, colour = "blue", size = 7)+
+    theme(axis.text=element_text(size=12),axis.title=element_text(size=15,face="bold"))
+  
+  return(gg)
+
+  temp = na.omit(orderdat2[,c(1,3)]); head(temp)
+temp = temp[which(temp[,2] > 0), ]
+summary(temp)
+m1 = mean(temp[which(temp[,1] == "A"),2])
+s1 = sd(temp[which(temp[,1] == "A"),2])
+m2 = mean(temp[which(temp[,1] == "B"),2])
+s2 = sd(temp[which(temp[,1] == "B"),2])
+m3 = mean(temp[which(temp[,1] == "C"),2])
+s3 = sd(temp[which(temp[,1] == "C"),2])
+# Interleaved histograms
+arg1 = paste0("HorizonA: mean = ", round(m1,digits=3), ", sd = ", round(s1, digits=3))
+arg2 = paste0("HorizonB: mean = ", round(m2,digits=3), ", sd = ", round(s2, digits=3))
+arg3 = paste0("HorizonC: mean = ", round(m3,digits=3), ", sd = ", round(s3, digits=3))
+input = paste("Sand", un5)
+  temp = na.omit(orderdat2[,c(1,2)]); head(temp)
+temp1 = temp[which(temp[,1] == "A"),]
+temp2 = temp[which(temp[,1] == "B"),]
+temp3 = temp[which(temp[,1] == "C"),]
+temp1 = droporder(temp1,1)
+temp3 = droporder(temp3,1)
+temp2 = droporder(temp2,1)
+summary(temp1)
+summary(temp2)
+summary(temp3)
+m1 = mean(temp1[,2])
+s1 = sd(temp1[,2])
+m2 = mean(temp2[,2])
+s2 = sd(temp2[,2])
+m3 = mean(temp3[,2])
+s3 = sd(temp3[,2])
+arg1 = paste("mean =", round(m1, digits=3)); arg1
+arg2 = paste("sd =", round(s1, digits=3)); arg2
+arg3 = paste("N =", dim(temp1)[1]); arg3
+arg4 = paste("mean =", round(m2, digits=3)); arg4
+arg5 = paste("sd =", round(s2, digits=3)); arg5
+arg6 = paste("N =", dim(temp2)[1]); arg6
+arg7 = paste("mean =", round(m3, digits=3)); arg7
+arg8 = paste("sd =", round(s3, digits=3)); arg8
+arg9 = paste("N =", dim(temp3)[1]); arg9
+colnames(temp2)[2] = "Property"
+colnames(temp3)[2] = "Property"
+colnames(temp1)[2] = "Property"
+}  
+  
+  
+ 
+
+```
+
+#12 Soil orders (correlation)
+```{r}
+colnames(dat2)
+orderdat2 = dat2[, -1]
+colnames(orderdat2)
+summary(orderdat2)
+table(orderdat2[,10])
+
+#Alfisols
+temp = orderdat2[which(orderdat2[,10] == "Alfisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Alfisols
+temp = orderdat2[which(orderdat2[,10] == "Andisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Aridisols
+temp = orderdat2[which(orderdat2[,10] == "Aridisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Entisols
+temp = orderdat2[which(orderdat2[,10] == "Entisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Gelisols
+temp = orderdat2[which(orderdat2[,10] == "Gelisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Histosols
+temp = orderdat2[which(orderdat2[,10] == "Histosols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Inceptisols
+temp = orderdat2[which(orderdat2[,10] == "Inceptisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Mollisols
+temp = orderdat2[which(orderdat2[,10] == "Mollisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Oxisols
+temp = orderdat2[which(orderdat2[,10] == "Oxisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Spodosols
+temp = orderdat2[which(orderdat2[,10] == "Spodosols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Ultisols
+temp = orderdat2[which(orderdat2[,10] == "Ultisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Vertisols
+temp = orderdat2[which(orderdat2[,10] == "Vertisols"),-10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+```
+
+#soil orders/sets comparison (circel plot)
+```{r}
+colnames(dat2)
+summary(dat2)
+colnames(setcompdat2)
+summary(setcompdat2)
+
+circlePlot(setcompdat2, "physical")
+circlePlot(setcompdat2, "chemical")
+circlePlot(dat2, "physical")
+circlePlot(dat2, "chemical")
+
+# physical
+h1 = transdat(dat2, 2)
+h2 = transdat(dat2, 3)
+h3 = transdat(dat2, 4)
+h4 = transdat(dat2, 9)
+
+h1 = addUnit(h1, 2, "(%)")
+h2 = addUnit(h2, 2, "(%)")
+h3 = addUnit(h3, 2, "(%)")
+h4 = addUnit(h4, 2, "(%)")
+
+
+# chemical
+h5 = transdat(dat2, 5)
+h6 = transdat(dat2, 8)
+h7 = transdat(dat2, 10)
+
+h5 = addUnit(h5, 2, un1)
+h6 = addUnit(h6, 2, un3)
+h7 = addUnit(h7, 2, un2)
+
+pytotal = rbind(h1,h2,h3,h4)
+chtotal = rbind(h5,h6,h7)
+gg = ggplot(data=chtotal, aes(x=order, y=value, group=property, colour=property)) +
+    geom_line() +
+    geom_point() +
+  xlab("") +
+  ylab("") +
+  theme(axis.text=element_text(size=8, face="bold"),axis.title=element_text(size=9,face="bold"))
+gg + coord_polar(theta = "x", direction=1 )
+
+
+
+
+```
+
+#CV in Classification for 12 Soil_order
+```{r}
+#no use only store used functions.
+store1 = function(x){
+  cdat2 = na.omit(dat2[, -c(1)])
+colnames(cdat2)
+dim(cdat2)
+sapply(cdat2, summary)
+cdat2 = cdat2[which(cdat2[,2] > 0 ),]
+cdat2 = cdat2[which(cdat2[,4] > 0 ),]
+cdat2 = cdat2[which(cdat2[,6] < 100 ),]
+newcdat2 = cdat2[, -c(2,8)]
+?randomForest
+#Random Forest
+library("randomForest")
+cv.rf = function(dat, m, var){
+  index = sample(nrow(dat))
+  group = rep(1:5, length = nrow(dat))
+  f_index = split(index, group)
+  miss = as.numeric(5)
+  for(i in 1:5){
+    datas = dat[-f_index[[i]], ]
+    folds = dat[f_index[[i]], ]
+    model = randomForest(Taxorder~., data = datas, mtry = m)
+    pred = predict(model, folds)
+    miss[i] = 1 - sum(diag(table(pred, folds$Taxorder)))/(dim(folds)[1])
+  }
+  ave_miss = mean(miss)
+  return(ave_miss)
+}
+
+cv.rf(cdat2, 3)
+#miss rate: 0.3462015
+cv.rf(newcdat2, 3)
+#miss rate: 0.3724645
+
+###Logistic###
+library("nnet")
+cv.logit = function(dat){
+  index = sample(nrow(dat))
+  group = rep(1:5, length = nrow(dat))
+  f_index = split(index, group)
+  miss = as.numeric(5)
+  for(i in 1:5){
+    datas = dat[-f_index[[i]], ]
+    folds = dat[f_index[[i]], ]
+    model = multinom(formula = Taxorder~., data = datas)
+    pred = predict(model, folds)
+    miss[i] = 1 - sum(diag(table(pred, folds$Taxorder)))/(dim(folds)[1])
+  }
+  ave_miss = mean(miss)
+  return(ave_miss)
+}
+
+cv.logit(cdat2)
+#miss rate: 0.4551824
+cv.logit(newcdat2)
+#miss rate: 0.4695735
+
+###Tree###
+library("rpart")
+cv.tree = function(dat){
+  index = sample(nrow(dat))
+  group = rep(1:5, length = nrow(dat))
+  f_index = split(index, group)
+  miss = as.numeric(5)
+  for(i in 1:5){
+    datas = dat[-f_index[[i]], ]
+    folds = dat[f_index[[i]], ]
+    model = rpart(formula = Taxorder~., data = datas)
+    pred = predict(model, folds, type = "class")
+    miss[i] = 1 - sum(diag(table(pred, folds$Taxorder)))/(dim(folds)[1])
+  }
+  ave_miss = mean(miss)
+  return(ave_miss)
+}
+
+cv.tree(cdat2)
+#miss rate: 0.4956232
+cv.tree(newcdat2)
+#miss rate: 0.5174015
+
+###LDA###
+library(classifly)
+library(MASS)
+y = as.numeric(cdat2[,10])
+x = as.matrix(cdat2[,1:9])
+n = nrow(x)
+p = ncol(x)
+lda.fit = lda(x,y)
+lda.labels = predict(lda.fit)$class
+table(y, lda.labels)
+lda.fit
+sum(diag(table(y, lda.labels)))/n
+#miss rate: 0.524021
+y1 = as.numeric(newcdat2[,8])
+x1 = as.matrix(newcdat2[,1:7])
+n1 = nrow(x1)
+p1 = ncol(x1)
+lda.fit1 = lda(x1,y1)
+lda.labels1 = predict(lda.fit1)$class
+table(y1, lda.labels1)
+lda.fit1
+sum(diag(table(y1, lda.labels1)))/n1
+#miss rate: 0.52066832
+
+
+###KNN###
+library(class)
+knn.labels = knn(x,x,y,k=1) # test set = train set
+table(y, knn.labels)
+sum(diag(table(y, knn.labels)))/n
+
+
+###Lasso###
+library("Matrix")
+library("glmnet")
+lasso.mod=glmnet(x, y,alpha=1)
+plot(lasso.mod, xvar ="lambda")
+cv.out=cv.glmnet(x,y,alpha=1)
+plot(cv.out)
+bestlam=cv.out$lambda.min; bestlam
+lasso.mod=glmnet(x,y, alpha=1, lambda = bestlam)
+str(lasso.mod)
+predict(lasso.mod, x, type = "coefficients")
+
+rates = data.frame(Method = c("randomForest", "LinearDiscriminantAnalysis", "Logistic", "Tree"), error_rate = c(0.3462,   0.5240,   0.4551,  0.4956))
+rates
+
+library(ggplot2)
+ggplot(data=rates, aes(x=Method, y=error_rate, fill=Method)) +
+    geom_bar(stat="identity", width = .5) + ggtitle("Missclassification Rate Comparison") +
+  stat_summary(fun.y=max, colour="red", geom="text", size = 5, show_guide = FALSE, 
+                 vjust=-0.2, aes( label=round(..y.., digits=4)))
+
+}
+
+###which model to choose?
+nrcs_miss = classification.comparisons(cdat2, 3, 1, 9)
+ratecomp(nrcs_miss, .5, 5, 12, 15)
+
+#choose randomForest as the final model
+rf.Imp(cdat2, 3, 1)
+rf.Imp(cdat2, 3, 100)
+rf.Imp(cdat2, 3, 50)
+
+
+
+library(ggplot2)
+library(randomForest)
+set.seed(1)
+nrcs.class = randomForest(Taxorder~.,data=newcdat2, importance = T, mtry=3)
+importance(nrcs.class)
+varImpPlot(nrcs.class)
+
+imp <- importance(nrcs.class, type=1)
+featureImportance <- data.frame(Feature=row.names(imp), Importance=imp[,1])
+
+p <- ggplot(featureImportance, aes(x=reorder(Feature, Importance), y=Importance)) +
+  geom_bar(stat="identity", fill="#53cfff") +
+  coord_flip() + 
+  theme_light(base_size=20) +
+  xlab("Importance") +
+  ylab("") + 
+  ggtitle("Random Forest Feature Importance\n") +
+  theme(plot.title=element_text(size=18))
+p
+
+
+
+
+# no use, previous code
+store = function(){
+  library(party)
+cf1 <- cforest(Taxorder~.,data=newcdat2,control=cforest_unbiased(mtry=3))
+var_imp = varimp(cf1)
+class(var_imp)
+names(var_imp)
+vI = data.frame(names = names(var_imp), values = var_imp )
+vI
+p1 <- ggplot(vI, aes(x=reorder(names, values), y=values)) +
+  geom_bar(stat="identity", fill="#53cfff") +
+  coord_flip() + 
+  theme_light(base_size=20) +
+  xlab("Importance") +
+  ylab("") + 
+  ggtitle("Random Forest Feature Importance\n") +
+  theme(plot.title=element_text(size=18))
+p1
+  #SVM
+library("e1071")
+colnames(cdat2)
+svmfit=svm(Taxorder~., data=cdat2, kernel="radial", cost=10, gamma=1) 
+
+summary(svmfit)
+miss = 1 - sum(diag(table(svmfit$fitted, cdat2[,10])))/dim(cdat2)[1]
+miss
+
+tune.out = tune(svm, Taxorder~., data = cdat2, kernel = "radial", ranges = list(cost = c(0.1,1,10,100,1000),
+                                                                                gamma = c(0.5,1,2,3,4)))
+
+summary(tune.out)
+
+#cv on support vector machine
+cv.svm(cdat2)
+#miss: 37.05%
+cv.svm = function(dat){
+  index = sample(nrow(dat))
+  group = rep(1:5, length = nrow(dat))
+  f_index = split(index, group)
+  miss = as.numeric(5)
+  for(i in 1:5){
+    datas = dat[-f_index[[i]], ]
+    folds = dat[f_index[[i]], ]
+    model = svm(Order~., data=datas, kernel="radial", cost=10, gamma=1)
+    pred = predict(model, folds)
+    miss[i] = 1 - sum(diag(table(pred, folds$Taxorder)))/(dim(folds)[1])
+  }
+  ave_miss = mean(miss)
+  return(ave_miss)
+}
+}
+
+
+```
+
+#4 soil sets obtain --> (newdat2)
+```{r}
+orders2 = levels(dat2[,11]); orders2
+groups2 = c("Veg", "PM", "Climate", "Age", "Climate", "PM", "Age", 
+            "Veg", "Climate", "Veg", "Age", "PM")
+groups2 = as.factor(groups2)
+groups2
+dat2groups = data.frame(Taxorder = orders2, Group = groups2); dat2groups
+
+#groupsbind = function(x){
+#  cols = dim(x)[1]
+# m = NULL
+#  for(i in 1:100){
+#    y = dat2groups[which(dat2groups[,1] == x[i,11]),]
+#    m = rbind(m, y)
+#  }
+#  return(m)
+#}
+
+gb = Soilorderbind(dat2groups, 1, dat2, 11)
+save(gb, file = "NRCSgroupname.RData")
+newdat2 = cbind(dat2, gb)
+newdat2 = newdat2[,-c(12)]
+colnames(newdat2)
+```
+
+#4 soil sets correlation
+```{r}
+colnames(newdat2)
+c.newdat2 = newdat2[,-c(1,11)]
+colnames(c.newdat2)
+table(c.newdat2[,10])
+
+#Age
+temp = c.newdat2[which(c.newdat2[,10] == "Age"), -10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Climate
+temp = c.newdat2[which(c.newdat2[,10] == "Climate"), -10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#PM
+temp = c.newdat2[which(c.newdat2[,10] == "PM"), -10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+
+#Veg
+temp = c.newdat2[which(c.newdat2[,10] == "Veg"), -10]
+pairs(temp, lower.panel=panel.regression,upper.panel=panel.cor1, diag.panel=panel.hist1)
+```
+
+#4 soil sets distribution
+```{r}
+colnames(newdat2)
+tnewdat2 = newdat2[, -11]
+colnames(tnewdat2)[11] = "Order"
+colnames(tnewdat2)
+summary(tnewdat2)
+
+ttnewdat2 = tnewdat2
+ttnewdat2 = ttnewdat2[-which(ttnewdat2$Silt<0),]
+ttnewdat2 = ttnewdat2[-which(ttnewdat2$Organic.Carbon<0),]
+ttnewdat2 = ttnewdat2[-which(ttnewdat2$Base.Saturation>100),]
+setdat2 = tnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[4]),]
+summary(setdat2)
+
+
+
+#Sand
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[4]),]
+summary(setdat2)
+easygrid(setdat2, 55, 0.021, 0.019, 0.017, 0.023, 2, 5)
+
+#Silt
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[4]),]
+summary(setdat2)
+easygrid(setdat2, 55, 0.025, 0.023, 0.021, 0.027, 3, 5)
+easygrid(setdat2, 55, 0.031, 0.029, 0.027, 0.033, 3, 5)
+easygrid(setdat2, 55, 0.041, 0.039, 0.037, 0.043, 3, 5)
+#OC
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[4]),]
+summary(setdat2)
+a1 = orderHist(setdat2,1, 25, 0.35,0.3,0.25,0.4, 5,1 ); a1
+a2 = orderHist(setdat2,2, 15, 1.4,1.2,1,1.6, 5,.5 ); a2
+a3 = orderHist(setdat2,3, 5, 2.1,1.8,1.5,2.4, 5,.2 ); a3
+
+par(mfrow =c(1,3))
+grid.arrange(a1, a2, a3, ncol = 3, nrow = 1)
+#BD
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[4]),]
+summary(setdat2)
+easygrid(setdat2, 1, 2.3, 2.1, 1.9, 2.5, 6, .2)
+#BS
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[1]),]
+summary(setdat2)
+easygrid(setdat2, 35, 0.065, 0.06, 0.055, 0.07, 9, 5)
+easygrid(setdat2, 35, 0.055, 0.05, 0.045, 0.06, 9, 5)
+easygrid(setdat2, 35, 0.09, 0.08, 0.07, 0.1, 9, 5)
+#pH
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[4]),]
+summary(setdat2)
+easygrid(setdat2, 6, 0.65, 0.6, 0.55, 0.7, 10, .5)
+easygrid(setdat2, 6, 0.85, 0.8, 0.75, 0.9, 10, .5)
+
+
+#CEC.Soil
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[1]),]
+summary(setdat2)
+easygrid(setdat2, 75, 0.025, 0.023, 0.021, 0.027, 7, 5)
+easygrid(setdat2, 75, 0.031, 0.029, 0.027, 0.033, 7, 5)
+easygrid(setdat2, 85, 0.06, 0.055, 0.05, 0.065, 7, 5)
+
+#CEC.CLay
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[4]),]
+summary(setdat2)
+easygrid(setdat2, 25, 0.55, 0.5, 0.45, 0.6, 8, 1)
+
+#Clay
+setdat2 = ttnewdat2[which(ttnewdat2[,11] == levels(ttnewdat2[,11])[1]),]
+summary(setdat2)
+easygrid(setdat2, 55, 0.025, 0.023, 0.021, 0.027, 4, 5)
+easygrid(setdat2, 55, 0.031, 0.029, 0.027, 0.033, 4, 5)
+easygrid(setdat2, 55, 0.042, 0.039, 0.036, 0.045, 4, 5)
+
+
+```
+
+# 4 sets comparison
+```{r}
+setcompdat2 = newdat2[, -11]
+colnames(setcompdat2)[11] = "Order"
+colnames(setcompdat2)
+summary(setcompdat2)
+
+#Sand
+temp = na.omit(setcompdat2[,c(2,11,1)]); head(temp)
+temp = temp[which(temp[,1]<=100),]
+summary(temp)
+ordercomp3(temp,un5, 114, 109, 104, 6, 15,25)
+
+#Silt
+temp = na.omit(setcompdat2[,c(3,11,1)]); head(temp)
+temp = temp[which(temp[,1]>=0),]
+summary(temp)
+ordercomp3(temp,un5, 114, 109, 104, 6, 15,25)
+
+#Clay
+temp = na.omit(setcompdat2[,c(4,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un5, 114, 109, 104, 6, 15,25)
+
+#OC
+temp = na.omit(setcompdat2[,c(5,11,1)]); head(temp)
+temp = temp[which(temp[,1]>=0),]
+summary(temp)
+setcomp(temp,un1, 150, 90, 60, 6, 15,25, "log")
+
+#BD
+temp = na.omit(setcompdat2[,c(6,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un7, 3.5,3.3,3.1, 6, 15,25)
+
+#CEC.Soil
+temp = na.omit(setcompdat2[,c(7,11,1)]); head(temp)
+summary(temp)
+setcomp(temp,un1, 550, 390, 260, 6, 15,25, "log")
+
+#CEC.Soil
+temp = na.omit(setcompdat2[,c(8,11,1)]); head(temp)
+summary(temp)
+setcomp(temp,un1, 750, 390, 200, 6, 15,25, "log")
+
+#BS
+temp = na.omit(setcompdat2[,c(9,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un4, 115, 110, 105, 6, 15,25)
+
+#pH
+temp = na.omit(setcompdat2[,c(10,11,1)]); head(temp)
+summary(temp)
+ordercomp3(temp,un2, 12.5, 12, 11.5, 6, 15,25)
+
+
+# no use, old code.
+store =function(){
+  setcompdat2 = newdat2[,c(-11)]
+colnames(setcompdat2)[11] = "Order"
+colnames(setcompdat2)
+
+temp = na.omit(setcompdat2[, c(1, 10, 11)]); head(temp)
+temp = temp[which(temp[,2]>0), ]
+temp = temp[which(temp[,2]<100),]
+summary(temp)
+
+compBoxplot(temp,1,12,4, 5, 12,25,"black", un2)
+compBoxplot(temp,1,65,4, 5, 12,25,"black", un4)
+compBoxplot(temp,1,65,4, 5, 12,25,"black", un3)
+compBoxplot(temp,1,2,2, 5, 12,25,"black", un7)
+compBoxplot(temp,1,60,2, 5, 12,25,"black", un1)
+compBoxplot(temp,1,105,3.5, 5, 12,25,"black", un5)
+}
+
+```
+
+#within 4 soilsets
+```{r}
+###Age###
+colnames(newdat2)
+temp = na.omit(newdat2[which(newdat2[,12] == "Age"), c(1,9,11)]); head(temp)
+temp = temp[which(temp[,2] < 100),]
+summary(temp)
+
+a4 = aov(Base.Saturation~Taxorder, data = temp)
+summary(a4)
+TukeyHSD(a4)
+
+ggplot(temp, aes(x=Taxorder, y=Base.Saturation, fill=Taxorder)) + geom_boxplot() + 
+  ggtitle("Base.Saturation distribution in Age Soil Set") +
+  ylab("Base.Saturation (% of CEC)") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.2, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) #+ 
+  annotate("text", x = c(1,4,2), y = c(40,40,60), label = c("Climate-Age: Pvalue=0.051", "Veg-Age: Pvalue=0.949", "Veg-Climate: Pvalue=0.0095"), colour = "blue", size = 4)
+
+
+###Climate###
+climatenewdat2 = newdat2[which(newdat2[,14] == "Climate"),]
+sapply(climatenewdat2[,c(4:12)], summary)
+ggplot(climatenewdat2, aes(x=Horizon, y=Sand, fill=Taxorder)) + geom_boxplot() + 
+  ggtitle("Sand distribution in Climate Group at each Horizon")
+ggplot(climatenewdat2, aes(x=Taxorder, y=Sand, fill=Taxorder)) + geom_boxplot() + 
+  ggtitle("Sand distribution in Climate Group") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+###PM###
+pmnewdat2 = newdat2[which(newdat2[,14] == "PM"),]
+sapply(pmnewdat2[,c(4:12)], summary)
+ggplot(pmnewdat2, aes(x=Horizon, y=Sand, fill=Taxorder)) + geom_boxplot() + 
+  ggtitle("Sand distribution in PM Group at each Horizon")
+ggplot(pmnewdat2, aes(x=Taxorder, y=Sand, fill=Taxorder)) + geom_boxplot() + 
+  ggtitle("Sand distribution in PM Group") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+
+###Veg###
+vegnewdat2 = newdat2[which(newdat2[,14] == "Veg"),]
+sapply(vegnewdat2[,c(4:12)], summary)
+ggplot(vegnewdat2, aes(x=Horizon, y=Sand, fill=Taxorder)) + geom_boxplot() + 
+  ggtitle("Sand distribution in Veg Group at each Horizon")
+ggplot(vegnewdat2, aes(x=Taxorder, y=Sand, fill=Taxorder)) + geom_boxplot() + 
+  ggtitle("Sand distribution in Veg Group") +
+  stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) +
+  stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=max, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1))) +
+  stat_summary(fun.y=min, colour="red", geom="text", show_guide = FALSE, 
+               vjust=-0.7, aes( label=round(..y.., digits=1)))
+```
+
+#PCA
+```{r}
+pdat2 = na.omit(dat2[, -c(1,11)])
+dim(pdat2)
+summary(pdat2)
+npca = prcomp(pdat2, center = T, scale = T)
+npca
+par(mfrow = c(1,1))
+plot(npca, type = "l", main = "")
+#5 is good
+#rotation matrix of the first 5 pcs.
+rot = round(npca$rotation, digits = 3)[, 1:5]
+rot[,1:5]
+#biplot
+biplot(npca, xlabs=rep(".", nrow(pdat2)), cex =.8)
+str(summary(npca))
+vars = data.frame(pcs = names(summary(npca)$importance[3,]), 
+                  value = round(summary(npca)$importance[3,],digits = 3) *100)
+class(vars)
+
+vars2 = data.frame(pcs = names(round(summary(npca)$importance[1,]^2, digits = 3)), 
+                   value = round(summary(npca)$importance[1,]^2, digits = 3))
+
+v1 = ggplot(data=vars2, aes(x=pcs, y=value, group = 1)) +
+    geom_line() +
+  geom_point() +
+  xlab("") +
+  ylab("Variance") +
+  theme(axis.text=element_text(size=15),axis.title=element_text(size=20,face="bold")) +
+  stat_summary(fun.y=max, colour="black", geom="text", size = a1, show_guide = FALSE, 
+                 vjust=-0.2, aes( label=round(..y.., digits=2)))
+
+library(ggplot2)
+v2 =ggplot(data=vars, aes(x=pcs, y=value)) +
+    geom_bar(colour="black", stat="identity", width = .5) +
+    guides(fill=FALSE) +
+  xlab("") +
+  ylab("Cumulative Proportion of Variance (%)") +
+  theme(axis.text=element_text(size=15),axis.title=element_text(size=20,face="bold")) +
+  stat_summary(fun.y=max, colour="black", geom="text", size = a1, show_guide = FALSE, 
+                 vjust=-0.2, aes( label=round(..y.., digits=2)))
+
+library(grid)
+library(gridExtra)
+par(mfrow = c(1,2))
+grid.arrange(v1, v2,ncol = 2, nrow = 1)
+
+biplot(npca)
+library(rgl)
+ncomp = as.data.frame(npca$x[,1:5])
+# Multi 3D plot
+plot3d(ncomp$PC1, ncomp$PC2, ncomp$PC3, xlab = "PC1", ylab = "PC2", zlab = "PC3")
+```
+
+#K-means
+```{r}
+# Determine number of clusters
+par(mfrow =c(1,1))
+numclu = num_clusters(npca$x[,1:5], 15)
+
+# 7 might be the "elbow point"
+nkm = kmeans(ncomp,7, nstart = 20)
+nkm$tot.withinss
+nkm.clusters = nkm$cluster
+plot(ncomp, col=(nkm.clusters+1),pch=20, cex=2)
+plot3d(ncomp$PC1, ncomp$PC2, ncomp$PC3, col=nkm.clusters+1)
+
+nkmdat = cbind(pdat2, Clusters = as.factor(nkm.clusters))
+summary(nkmdat)
+colnames(nkmdat)
+dim(nkmdat)
+
+
+
+#Sand
+temp = na.omit(nkmdat[, c(10,1)]); head(temp)
+summary(temp)
+ClustersComp(temp, un5, 107, 10, 15, 25, "no")
+ggsave("Sand.png")
+
+#Silt
+temp = na.omit(nkmdat[, c(10,2)]); head(temp)
+summary(temp)
+ClustersComp(temp, un5, 107, 10, 15, 25, "no")
+ggsave("Silt.png")
+
+#Clay
+temp = na.omit(nkmdat[, c(10,3)]); head(temp)
+summary(temp)
+ClustersComp(temp, un5, 107, 10, 15, 25, "no")
+ggsave("Clay.png")
+
+#OC
+temp = na.omit(nkmdat[, c(10,4)]); head(temp)
+summary(temp)
+ClustersComp(temp, un1, 25, 10, 15, 22, "log")
+ggsave("OC.png")
+
+#ggplot(temp, aes(x=Clusters, y=Organic.Carbon, fill= Clusters)) + geom_boxplot()+
+#  scale_y_continuous(trans=log10_trans())
+#  stat_summary(fun.y=mean, colour="black", size = 8, show_guide = FALSE)
+
+#BD
+temp = na.omit(nkmdat[, c(10,5)]); head(temp)
+summary(temp)
+ClustersComp(temp, un7, 3.2, 10, 15, 25, "no")
+ggsave("BD.pdf")
+
+#CEC.Soil
+temp = na.omit(nkmdat[, c(10,6)]); head(temp)
+summary(temp)
+ClustersComp(temp, un3, 170, 10, 15, 25, "log")
+ggsave("CEC.Soil.png")
+
+
+#CEC.Clay
+temp = na.omit(nkmdat[, c(10,7)]); head(temp)
+summary(temp)
+ClustersComp(temp, un3, 53, 10, 15, 25, "log")
+ggsave("CEC.Clay.png")
+
+#BS
+temp = na.omit(nkmdat[, c(10,8)]); head(temp)
+summary(temp)
+ClustersComp(temp, un4, 116, 10, 15, 20, "no")
+ggsave("BS.png")
+
+#pH
+temp = na.omit(nkmdat[, c(10,9)]); head(temp)
+summary(temp)
+ClustersComp(temp, un2, 11.7, 10, 15, 25, "no")
+ggsave("pH.png")
+
+```
+
+#database
+```{r}
+NRCS = newdat2
+colnames(NRCS)[11] = "Order" 
+colnames(NRCS)[12] = "Set" 
+save(NRCS, file = "NRCS.Rdata")
+```
